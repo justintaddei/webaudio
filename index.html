@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WebAudio Experiments</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <h1>WebAudio API Experiments</h1>
+    <canvas id="canvas"></canvas>
+    <audio id="audio" src="audio.mp3"></audio>
+    <script src="app.js"></script>
+    <script>
+        var playing = false;
+        document.onclick = function () {
+            if (playing)
+                audio.pause();
+            else
+                audio.play();
+
+            playing = !playing;
+        };
+    </script>
+</body>
+
+</html>
