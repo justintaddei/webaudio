@@ -1,5 +1,5 @@
 var audio = document.querySelector('audio');
-var audioContext = new AudioContext();
+var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)();
 var audioElementSource = audioContext.createMediaElementSource(audio);
 var source = audioElementSource;
 var canvas1 = document.querySelector('#canvas1');
@@ -178,50 +178,6 @@ function draw() {
 
     requestAnimationFrame(draw);
 }
-
-/*function draw() {
-    analyser.getByteFrequencyData(frequencyData);
-    analyser.getByteTimeDomainData(timeDomainData);
-    canvas1Context.clearRect(0, 0, width, height);
-    if (delay % clearDelay === 0)
-        canvas2Context.clearRect(0, 0, width, height);
-
-    delay++;
-
-    var barXOffset = 0;
-
-    var color = 'rgb(0,200,145)';
-    var grd = canvas1Context.createLinearGradient(0, 0, 0, height);
-    grd.addColorStop(0, 'rgb(255, 0, 0)');
-    grd.addColorStop(1, 'rgb(0,255,100)');
-    canvas2Context.strokeStyle = color;
-    canvas2Context.lineJoin = 'round';
-    canvas2Context.lineCap = 'round';
-    canvas1Context.fillStyle = grd;
-
-    canvas2Context.beginPath();
-
-    for (var i = 0; i < frequencyBinCount; i++) {
-        var barHeight = frequencyData[i] / 255 * height;
-        var barYOffset = height - barHeight;
-        canvas1Context.fillRect(barXOffset, barYOffset, barWidth, barHeight);
-
-        var v = timeDomainData[i] / 255.0;
-        var y = ((height / 2) * v);
-        if (i === 0) {
-            canvas2Context.moveTo(barXOffset, y);
-        } else {
-            canvas2Context.lineTo(barXOffset, y);
-        }
-
-        barXOffset += barWidth;
-    }
-
-    canvas2Context.lineTo(width, height / 2);
-    canvas2Context.stroke();
-
-    requestAnimationFrame(draw);
-}*/
 
 draw();
 
