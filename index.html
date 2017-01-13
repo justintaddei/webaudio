@@ -10,20 +10,46 @@
 
 <body>
     <h1>WebAudio API Experiments</h1>
-    <canvas id="canvas"></canvas>
-    <audio id="audio" src="audio.mp3"></audio>
-    <script src="app.js"></script>
-    <script>
-        var playing = false;
-        document.onclick = function () {
-            if (playing)
-                audio.pause();
-            else
-                audio.play();
+    <label for="filter">Filter</label>
+    <select id="filter">
+        <option value="none">None</option>
+        <option value="lowpass">Lowpass</option>
+        <option value="highpass">Highpass</option>
+        <option value="lowshelf">Lowshelf</option>
+        <option value="highshelf">Highshelf</option>
+        <option value="bandpass">Bandpass</option>
+    </select>
+    <label for="track">Track</label>
+    <select id="track">
+        <option value="audio.mp3">Hungry Like The Wolf</option>
+        <option value="audio2.mp3">Is It Over</option>
+        <option value="audio3.mp3">Fading Fast</option>
+        <option value="audio4.mp3">We Got The Beat</option>
+        <option value="audio5.mp3">I'll Be Mellow When I'm Dead</option>
+        <option value="audio6.mp3">Happy Birthday</option>
+        <option value="audio7.mp3">I Love Rocky Road</option>
+        <option value="audio8.mp3">One Tin Soldier</option>
+        <option value="audio9.mp3">The Logical Song</option>
+        <option value="audio10.mp3">Need Your Love</option>
+        <option value="junk.mp3">Chillin' It (Example of pure audio)</option>
+        <option value="sine">Sine Wave</option>
+        <option value="microphone">Microphone</option>
+    </select>
 
-            playing = !playing;
-        };
-    </script>
+    <label for="smoothing">Time Smoothing</label>
+    <input type="range" id="smoothing" value="0.8" min="0" max="0.99" step="any">
+
+    <label for="synthFrequency">Frequency (<input type="number" value="432">)</label>
+    <input type="range" id="synthFrequency" value="432" min="0" max="20000" step="1">
+
+    <audio src="audio.mp3" controls loop></audio>
+    <canvas id="canvas1"></canvas>
+
+    <label for="delay">Overlap</label>
+    <input type="range" id="delay" value="1" min="1" max="300" step="1">
+
+    <canvas id="canvas2" style="height: 255px !important;"></canvas>
+    <script src="app.js"></script>
 </body>
 
 </html>
