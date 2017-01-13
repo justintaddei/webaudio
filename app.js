@@ -186,6 +186,16 @@ var frequencyData = new Uint8Array(frequencyBinCount);
 var timeDomainData = new Uint8Array(frequencyBinCount);
 var delay = 0;
 var clearDelay = 1;
+var color = 'rgb(0,200,145)';
+var grd = canvas1Context.createLinearGradient(0, 0, 0, height);
+grd.addColorStop(0, 'rgb(255, 0, 0)');
+grd.addColorStop(1, 'rgb(0,255,100)');
+canvas1Context.fillStyle = grd;
+canvas1Context.lineJoin = 'round';
+canvas1Context.lineCap = 'round';
+canvas2Context.strokeStyle = color;
+canvas2Context.lineJoin = 'round';
+canvas2Context.lineCap = 'round';
 function draw() {
     analyser.getByteFrequencyData(frequencyData);
     analyser.getByteTimeDomainData(timeDomainData);
@@ -196,17 +206,6 @@ function draw() {
     delay++;
 
     var barXOffset = 0;
-
-    var color = 'rgb(0,200,145)';
-    var grd = canvas1Context.createLinearGradient(0, 0, 0, height);
-    grd.addColorStop(0, 'rgb(255, 0, 0)');
-    grd.addColorStop(1, 'rgb(0,255,100)');
-    canvas1Context.fillStyle = grd;
-    canvas1Context.lineJoin = 'round';
-    canvas1Context.lineCap = 'round';
-    canvas2Context.strokeStyle = color;
-    canvas2Context.lineJoin = 'round';
-    canvas2Context.lineCap = 'round';
 
     canvas1Context.beginPath();
     canvas2Context.beginPath();
@@ -240,7 +239,6 @@ function draw() {
 draw();
 
 function changeTrack(value) {
-    console.log(value);
     synthFrequencyLabel.style.display = 'none';
     synthFrequencyLabelCount.style.display = 'none';
     synthFrequency.style.display = 'none';
