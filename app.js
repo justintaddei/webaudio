@@ -142,6 +142,7 @@ function changeSource(src) {
         gain2.connect(audioContext.destination);
         source.start(0);
         audio.style.display = 'none';
+        record.style.display = 'none';
     } else if (src === 'microphone') {
         if (!microphone)
             return alert('No microphone access!');
@@ -242,6 +243,7 @@ function changeTrack(value) {
     synthFrequencyLabel.style.display = 'none';
     synthFrequencyLabelCount.style.display = 'none';
     synthFrequency.style.display = 'none';
+    record.style.display = 'none';
     audio.style.display = 'block';
     audio.src = value;
     if (gain1 && synth) {
