@@ -289,10 +289,6 @@ synthFrequency.addEventListener('mousemove', function () {
         synthFrequencyLabelCount.value = synthFrequency.value;
     }
 
-    if (filter instanceof BiquadFilterNode) {
-        filter.frequency.value = fliterF.value;
-        filterFLabelCount.value = filterF.value;
-    }
 });
 synthFrequency.addEventListener('mousedown', function () {
     canSliderChangeFrequency = true;
@@ -313,4 +309,10 @@ filterFLabelCount.addEventListener('change', function () {
 filterF.addEventListener('change', function () {
     filter.frequency.value = this.value;
     filterFLabelCount.value = this.value;
+});
+filterF.addEventListener('mousemove', function () {
+    if (filter instanceof BiquadFilterNode) {
+        filter.frequency.value = fliterF.value;
+        filterFLabelCount.value = filterF.value;
+    }
 });
