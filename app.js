@@ -7,6 +7,17 @@ var canvas2 = document.querySelector('#canvas2');
 var synthFrequencyLabel = document.querySelector('[for=synthFrequency]');
 var synthFrequencyLabelCount = document.querySelector('[for=synthFrequency] > input');
 var synthFrequency = document.querySelector('#synthFrequency');
+var filterFLabel = document.querySelector('[for=filterF]');
+var filterFLabelCount = document.querySelector('[for=filterF] > input');
+var filterF = document.querySelector('#filterF');
+var mediaRecorder = false, recordedDataChunks = [], recordedObjUrl = false;
+var record = document.querySelector('#record');
+var deleteRecording = document.querySelector('#delete');
+var saveRecording = document.querySelector('#save');
+record.style.display = 'none';
+
+filterFLabel.style.display = 'none';
+filterF.style.display = 'none';
 synthFrequencyLabelCount.style.display = 'none';
 synthFrequencyLabel.style.display = 'none';
 synthFrequency.style.display = 'none';
@@ -17,17 +28,55 @@ var microphone = false;
 canvas1.width = canvas1.getBoundingClientRect().width;
 canvas1.height = canvas1.getBoundingClientRect().height;
 
-navigator.getUserMedia(
-    {
-        audio: true
-    },
-    function (stream) {
-        microphone = audioContext.createMediaStreamSource(stream);
-    },
-    function (err) {
-        console.log('The following gUM error occured: ' + err);
-    }
-);
+if (navigator.getUserMedia) {
+    navigator.getUserMedia(
+        {
+            audio: true
+        },
+        function (stream) {
+            microphone = audioContext.createMediaStreamSource(stream);
+
+            if (window.MediaRecorder)
+                mediaRecorder = new MediaRecorder(stream);
+
+            if (mediaRecorder) {
+                mediaRecorder.ondataavailable = function (e) {
+                    recordedDataChunks.push(e.data);
+                };
+                record.addEventListener('click', function () {
+                    if (mediaRecorder.state === 'recording') {
+                        mediaRecorder.stop();
+                        record.classList.remove('recording');
+                        record.style.display = 'none';
+                        record.classList.add('recorded');
+                        audio.style.display = '';
+
+                        var blob = new Blob(recordedDataChunks, { 'type': 'audio/ogg; codecs=opus' });
+                        recordedDataChunks = [];
+                        recordedObjUrl = URL.createObjectURL(blob);
+                        changeTrack(recordedObjUrl);
+                    } else {
+                        mediaRecorder.start(0);
+                        record.classList.add('recording');
+                    }
+                });
+
+                deleteRecording.addEventListener('click', function () {
+                    recordedDataChunks = [];
+                    URL.revokeObjectURL(recordedObjUrl);
+                    recordedObjUrl = false;
+                    record.classList.remove('recorded');
+                    changeSource('microphone');
+                });
+            }
+        },
+        function (err) {
+            console.log('The following gUM error occured: ' + err);
+        }
+    );
+} else {
+    document.querySelector('select#track').removeChild(document.querySelector('[value=microphone]'));
+}
 
 var analyser = audioContext.createAnalyser();
 var gain1;
@@ -46,9 +95,15 @@ function changeFilter(filterType) {
 
     if (filterType === 'none') {
         filter = audioContext.createGain();
+        filterFLabel.style.display = 'none';
+        filterF.style.display = 'none';
     } else {
         filter = audioContext.createBiquadFilter();
         filter.type = filterType;
+        filterFLabelCount.value = filter.frequency.value;
+        filterF.value = filter.frequency.value;
+        filterFLabel.style.display = '';
+        filterF.style.display = '';
     }
 
     source.connect(filter);
@@ -90,6 +145,8 @@ function changeSource(src) {
     } else if (src === 'microphone') {
         if (!microphone)
             return alert('No microphone access!');
+        if (recordedObjUrl !== false)
+            return changeTrack(recordedObjUrl);
         source.disconnect(filter);
         if (!synth)
             filter.disconnect(analyser);
@@ -113,6 +170,7 @@ function changeSource(src) {
         synthFrequencyLabel.style.display = 'none';
         synthFrequencyLabelCount.style.display = 'none';
         synthFrequency.style.display = 'none';
+        record.style.display = '';
         audio.style.display = 'none';
     }
     synth = true;
@@ -160,7 +218,7 @@ function draw() {
         canvas1Context.lineTo(barXOffset, barYOffset);
 
         var v = timeDomainData[i];
-        var y = v - (height/8);
+        var y = v - (height / 8);
         if (i === 0) {
             canvas2Context.moveTo(barXOffset, y);
         } else {
@@ -181,16 +239,13 @@ function draw() {
 
 draw();
 
-document.querySelector('#track').addEventListener('change', function () {
-    if (this.value.indexOf('.mp3') < 0) {
-        changeSource(this.value);
-        return;
-    }
+function changeTrack(value) {
+    console.log(value);
     synthFrequencyLabel.style.display = 'none';
     synthFrequencyLabelCount.style.display = 'none';
     synthFrequency.style.display = 'none';
     audio.style.display = 'block';
-    audio.src = this.value;
+    audio.src = value;
     if (gain1 && synth) {
         source.disconnect(filter);
         filter.disconnect(gain1);
@@ -203,6 +258,14 @@ document.querySelector('#track').addEventListener('change', function () {
     }
     synth = false;
     audio.play();
+}
+
+document.querySelector('#track').addEventListener('change', function () {
+    if (this.value.indexOf('.mp3') < 0 && this.value.indexOf('blob:http') < 0) {
+        changeSource(this.value);
+        return;
+    }
+    changeTrack(this.value);
 });
 
 var canSliderChangeFrequency = true;
@@ -225,6 +288,11 @@ synthFrequency.addEventListener('mousemove', function () {
         source.frequency.value = synthFrequency.value;
         synthFrequencyLabelCount.value = synthFrequency.value;
     }
+
+    if (filter instanceof BiquadFilterNode) {
+        filter.frequency.value = fliterF.value;
+        filterFLabelCount.value = filterF.value;
+    }
 });
 synthFrequency.addEventListener('mousedown', function () {
     canSliderChangeFrequency = true;
@@ -236,4 +304,13 @@ synthFrequencyLabelCount.addEventListener('change', function () {
 });
 document.querySelector('#filter').addEventListener('change', function () {
     changeFilter(this.value);
+});
+
+filterFLabelCount.addEventListener('change', function () {
+    filter.frequency.value = this.value;
+    filterF.value = this.value;
+});
+filterF.addEventListener('change', function () {
+    filter.frequency.value = this.value;
+    filterFLabelCount.value = this.value;
 });

@@ -19,6 +19,10 @@
         <option value="highshelf">Highshelf</option>
         <option value="bandpass">Bandpass</option>
     </select>
+
+    <label for="filterF">Filter Frequency (<input type="number">Hz)</label>
+    <input type="range" id="filterF" min="0" max="20000" step="1">
+
     <label for="track">Track</label>
     <select id="track">
         <option value="audio.mp3">Hungry Like The Wolf</option>
@@ -39,10 +43,14 @@
         <option value="microphone">Microphone</option>
     </select>
 
+    <button id="record">Record audio</button>
+    <button id="delete">Delete recording</button>
+    <br>
+
     <label for="smoothing">Time Smoothing</label>
     <input type="range" id="smoothing" value="0.8" min="0" max="0.99" step="any">
 
-    <label for="synthFrequency">Frequency (<input type="number" value="432">)</label>
+    <label for="synthFrequency">Frequency (<input type="number" value="432">Hz)</label>
     <input type="range" id="synthFrequency" value="432" min="0" max="20000" step="1">
 
     <audio src="audio.mp3" controls loop></audio>
