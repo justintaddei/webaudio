@@ -312,7 +312,7 @@ filterF.addEventListener('change', function () {
 });
 filterF.addEventListener('mousemove', function () {
     if (filter instanceof BiquadFilterNode) {
-        filter.frequency.value = fliterF.value;
-        filterFLabelCount.value = filterF.value;
+        filter.frequency.value = this.value;
+        filterFLabelCount.value = this.value;
     }
 });
