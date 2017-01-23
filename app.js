@@ -257,10 +257,19 @@ function draw() {
     canvas1Context.fill();
     canvas2Context.stroke();
 
-    requestAnimationFrame(draw);
+    window.raf = requestAnimationFrame(draw);
 }
 
 draw();
+var isPaused = false;
+function pause() {
+    if (!isPaused) {
+        window.cancelAnimationFrame(window.raf);
+    } else {
+        draw();
+    }
+    isPaused = !isPaused;
+}
 
 function changeTrack(value) {
     synthFrequencyLabel.style.display = 'none';
