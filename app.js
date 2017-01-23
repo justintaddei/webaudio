@@ -4,6 +4,7 @@ var audioElementSource = audioContext.createMediaElementSource(audio);
 var source = audioElementSource;
 var canvas1 = document.querySelector('#canvas1');
 var canvas2 = document.querySelector('#canvas2');
+var canvasAvg = document.querySelector('#canvasAvg');
 var synthFrequencyLabel = document.querySelector('[for=synthFrequency]');
 var synthFrequencyLabelCount = document.querySelector('[for=synthFrequency] > input');
 var synthFrequency = document.querySelector('#synthFrequency');
@@ -23,10 +24,15 @@ synthFrequencyLabel.style.display = 'none';
 synthFrequency.style.display = 'none';
 var canvas1Context = canvas1.getContext('2d');
 var canvas2Context = canvas2.getContext('2d');
+var canvasAvgContext = canvasAvg.getContext('2d');
 var synth = false;
 var microphone = false;
 canvas1.width = canvas1.getBoundingClientRect().width;
 canvas1.height = canvas1.getBoundingClientRect().height;
+canvas2.width = canvas2.getBoundingClientRect().width;
+canvas2.height = canvas2.getBoundingClientRect().height;
+canvasAvg.width = canvasAvg.getBoundingClientRect().width;
+canvasAvg.height = canvasAvg.getBoundingClientRect().height;
 
 if (navigator.getUserMedia) {
     navigator.getUserMedia(
@@ -191,13 +197,19 @@ var color = 'rgb(0,200,145)';
 var grd = canvas1Context.createLinearGradient(0, 0, 0, height);
 grd.addColorStop(0, 'rgb(255, 0, 0)');
 grd.addColorStop(1, 'rgb(0,255,100)');
+canvasAvgContext.fillStyle = color;
+
 canvas1Context.fillStyle = grd;
 canvas1Context.lineJoin = 'round';
 canvas1Context.lineCap = 'round';
 canvas2Context.strokeStyle = color;
 canvas2Context.lineJoin = 'round';
 canvas2Context.lineCap = 'round';
+var avgBarOffset = 1;
+var avgX = 0;
+var loopCount = 0;
 function draw() {
+    loopCount++;
     analyser.getByteFrequencyData(frequencyData);
     analyser.getByteTimeDomainData(timeDomainData);
     canvas1Context.clearRect(0, 0, width, height);
@@ -207,18 +219,20 @@ function draw() {
     delay++;
 
     var barXOffset = 0;
+    var avgHeight = 0;
 
     canvas1Context.beginPath();
     canvas2Context.beginPath();
 
     canvas1Context.moveTo(0, height);
     for (var i = 0; i < frequencyBinCount; i++) {
+        avgHeight += frequencyData[i];
         var barHeight = frequencyData[i] / 256 * height;
         var barYOffset = height - barHeight;
         canvas1Context.lineTo(barXOffset, barYOffset);
 
         var v = timeDomainData[i];
-        var y = v - (height / 8);
+        var y = v / 255 * canvas2.height;
         if (i === 0) {
             canvas2Context.moveTo(barXOffset, y);
         } else {
@@ -226,6 +240,14 @@ function draw() {
         }
 
         barXOffset += barWidth;
+    }
+    avgHeight /= frequencyBinCount;
+    avgHeight = avgHeight / 256 * canvasAvg.height;
+    canvasAvgContext.fillRect(avgX, canvasAvg.height - avgHeight, avgBarOffset, avgHeight);
+    avgX += avgBarOffset;
+    if (avgX > canvasAvg.width) {
+        canvasAvgContext.clearRect(0, 0, canvasAvg.width, canvasAvg.height);
+        avgX = 0;
     }
 
     canvas1Context.lineTo(width, height);
