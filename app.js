@@ -348,3 +348,25 @@ filterF.addEventListener('mousemove', function () {
         filterFLabelCount.value = this.value;
     }
 });
+
+
+document.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    document.querySelector('#dragdrop').classList.add('show');
+    return false;
+}, false);
+
+document.addEventListener('dragleave', function () {
+    document.querySelector('#dragdrop').classList.remove('show');
+}, false);
+
+document.addEventListener('drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.querySelector('#dragdrop').classList.remove('show');
+
+    audio.src = URL.createObjectURL(e.dataTransfer.files[0]);
+    audio.load();
+    audio.play();
+    return false;
+}, false);

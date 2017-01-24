@@ -23,7 +23,7 @@
     <label for="filterF">Filter Frequency (<input type="number">Hz)</label>
     <input type="range" id="filterF" min="0" max="20000" step="1">
 
-    <label for="track">Audio source</label>
+    <label for="track">Audio source (or drag & drop file to play)</label>
     <select id="track">
         <option value="audio.mp3">Hungry Like The Wolf (Duran Duran)</option>
         <option value="audio12.mp3">Heart Of Glass (Blondie)</option>
@@ -68,6 +68,8 @@
     <input type="range" id="delay" value="1" min="1" max="300" step="1">
 
     <canvas id="canvas2"></canvas>
+
+    <div id="dragdrop">Drop audio file here to play</div>
     <script src="app.js"></script>
 </body>
 
