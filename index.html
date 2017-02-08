@@ -25,9 +25,9 @@
 
     <label for="track">Audio source (or drag & drop file to play)</label>
     <select id="track">
-        <option value="audio.mp3">Hungry Like The Wolf (Duran Duran)</option>
-        <option value="audio12.mp3">Heart Of Glass (Blondie)</option>
         <option value="audio13.mp3">Magic Man (Heart)</option>
+        <option value="audio12.mp3">Heart Of Glass (Blondie)</option>
+        <option value="audio.mp3">Hungry Like The Wolf (Duran Duran)</option>
         <option value="audio2.mp3">Is It Over (Kim Wilde)</option>
         <option value="audio3.mp3">Fading Fast (The Go-Go's')</option>
         <option value="audio4.mp3">We Got The Beat (The Go-Go's')</option>
@@ -40,8 +40,9 @@
         <option value="dannytaddei1.mp3">Another Beautiful Day (by Danny Taddei)</option>
         <option value="dannytaddei2.mp3">I Need To Be Free (by Danny Taddei)</option>
         <option value="dannytaddei3.mp3">My Imagination (by Danny Taddei)</option>
+        <option value="One Direction - Live While We're Young.mp3">Live While We're Young by One Direction (Example of poor dynamics)</option>
         <option value="audio11.mp3">Radioactive by Imagine Dragons (Example of poor dynamics)</option>
-        <option value="junk.mp3">Chillin' It (Example of poor dynamics)</option>
+        <option value="junk.mp3">Chillin' It by Cole Swindell (Example of poor dynamics)</option>
         <option value="sine">Sine Wave Oscillator</option>
         <option value="microphone">Microphone</option>
     </select>
@@ -57,12 +58,12 @@
     <label for="smoothing">Time Averaging</label>
     <input type="range" id="smoothing" value="0.8" min="0" max="0.99" step="any">
 
-    <audio src="audio.mp3" controls loop></audio>
+    <audio src="audio13.mp3" controls loop></audio>
     <canvas id="canvasAvg"></canvas>
     <canvas id="canvas1"></canvas>
 
     <label for="synthFrequency">Frequency (<input type="number" value="432">Hz)</label>
-    <input type="range" id="synthFrequency" value="432" min="0" max="20000" step="1">
+    <input type="range" id="synthFrequency" value="432" min="0" max="22050" step="1">
 
     <canvas id="canvas2"></canvas>
 

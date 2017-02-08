@@ -243,7 +243,7 @@ function draw() {
         barXOffset += barWidth;
     }
     avgHeight /= frequencyBinCount;
-    avgHeight = (avgHeight / 256 * canvasAvg.height) * 2;// Double the height to make it easier to see the peeks and valleys.
+    avgHeight = (avgHeight / 256 * canvasAvg.height) * 1.8;// Increase the height to make it easier to see the peeks and valleys.
     canvasAvgContext.fillRect(avgX, (canvasAvg.height - avgHeight)/2, avgBarOffset, avgHeight);
     avgX += avgBarOffset;
     if (avgX > canvasAvg.width) {
