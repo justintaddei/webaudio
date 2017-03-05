@@ -213,18 +213,13 @@ canvas2Context.lineCap = 'round';
 var avgBarOffset = 1;
 var avgX = 0;
 
-setInterval(function () {
+/*setInterval(function () {
     if (isPaused)
         return;
-
-    analyser.getByteTimeDomainData(timeDomainData);
-
-    canvasAvgContext.lineTo(avgX, timeDomainData[0] / 255 * height);
-    // avgX += avgBarOffset;
-    avgX++;
-},8);
+},8);*/
 
 function draw() {
+    analyser.getByteTimeDomainData(timeDomainData);
     analyser.getByteFrequencyData(frequencyData);
     canvas1Context.clearRect(0, 0, width, height);
     canvasAvgContext.clearRect(0, 0, width, height);
@@ -240,6 +235,7 @@ function draw() {
     canvas2Context.beginPath();
 
     canvas1Context.moveTo(0, height);
+    var timedomain = [], max, min;
     for (var i = 0; i < frequencyBinCount; i++) {
         // avgHeight += frequencyData[i];
         var barHeight = frequencyData[i] / 256 * height;
@@ -254,8 +250,16 @@ function draw() {
             canvas2Context.lineTo(barXOffset, y);
         }
 
+        timedomain.push(timeDomainData[i]);
         barXOffset += barWidth;
     }
+
+    max = Math.max.apply(null, timedomain);
+    min = Math.min.apply(null, timedomain);
+    canvasAvgContext.lineTo(avgX, max / 255 * height);
+    canvasAvgContext.lineTo(avgX, min / 255 * height);
+    avgX++;
+    // avgX += avgBarOffset;
     // avgHeight /= frequencyBinCount;
     // avgHeight = (avgHeight / 256 * canvasAvg.height) * 1.8;// Increase the height to make it easier to see the peeks and valleys.
 
