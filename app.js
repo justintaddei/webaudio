@@ -184,7 +184,7 @@ function changeSource(src) {
     synth = true;
 }
 
-analyser.fftSize = 2048;
+analyser.fftSize = 4096;
 
 var frequencyBinCount = analyser.frequencyBinCount;
 var height = canvas1.height;
@@ -198,19 +198,21 @@ var color = 'rgb(0,200,145)';
 var grd = canvas1Context.createLinearGradient(0, 0, 0, height);
 grd.addColorStop(0, 'rgb(255, 0, 0)');
 grd.addColorStop(1, 'rgb(0,255,100)');
-canvasAvgContext.fillStyle = color;
+var grd2 = canvas1Context.createLinearGradient(0, 0, 0, height);
+grd2.addColorStop(0, 'rgb(255, 0, 0)');
+grd2.addColorStop(0.5, 'rgb(0,255,100)');
+grd2.addColorStop(1, 'rgb(255, 0, 0)');
+canvasAvgContext.strokeStyle = grd2;
 
 canvas1Context.fillStyle = grd;
 canvas1Context.lineJoin = 'round';
 canvas1Context.lineCap = 'round';
-canvas2Context.strokeStyle = color;
+canvas2Context.strokeStyle = grd2;
 canvas2Context.lineJoin = 'round';
 canvas2Context.lineCap = 'round';
 var avgBarOffset = 1;
 var avgX = 0;
-var loopCount = 0;
 function draw() {
-    loopCount++;
     analyser.getByteFrequencyData(frequencyData);
     analyser.getByteTimeDomainData(timeDomainData);
     canvas1Context.clearRect(0, 0, width, height);
@@ -220,20 +222,20 @@ function draw() {
     delay++;
 
     var barXOffset = 0;
-    var avgHeight = 0;
+    // var avgHeight = 0;
 
     canvas1Context.beginPath();
     canvas2Context.beginPath();
 
     canvas1Context.moveTo(0, height);
     for (var i = 0; i < frequencyBinCount; i++) {
-        avgHeight += frequencyData[i];
+        // avgHeight += frequencyData[i];
         var barHeight = frequencyData[i] / 256 * height;
         var barYOffset = height - barHeight;
         canvas1Context.lineTo(barXOffset, barYOffset);
 
         var v = timeDomainData[i];
-        var y = v / 255 * canvas2.height;
+        var y = v / 255 * height;
         if (i === 0) {
             canvas2Context.moveTo(barXOffset, y);
         } else {
@@ -242,20 +244,28 @@ function draw() {
 
         barXOffset += barWidth;
     }
-    avgHeight /= frequencyBinCount;
-    avgHeight = (avgHeight / 256 * canvasAvg.height) * 1.8;// Increase the height to make it easier to see the peeks and valleys.
-    canvasAvgContext.fillRect(avgX, (canvasAvg.height - avgHeight)/2, avgBarOffset, avgHeight);
-    avgX += avgBarOffset;
-    if (avgX > canvasAvg.width) {
-        canvasAvgContext.clearRect(0, 0, canvasAvg.width, canvasAvg.height);
+    // avgHeight /= frequencyBinCount;
+    // avgHeight = (avgHeight / 256 * canvasAvg.height) * 1.8;// Increase the height to make it easier to see the peeks and valleys.
+    if (avgX > width) {
+        canvasAvgContext.closePath();
+        canvasAvgContext.clearRect(0, 0, width, height);
         avgX = 0;
     }
+    if (avgX === 0) {
+        canvasAvgContext.beginPath();
+        canvasAvgContext.moveTo(avgX, timeDomainData[0] / 255 * height);
+    }
+
+    canvasAvgContext.lineTo(avgX, timeDomainData[0] / 255 * height);
+    // avgX += avgBarOffset;
+    avgX++;
 
     canvas1Context.lineTo(width, height);
     canvas2Context.lineTo(width, height / 2);
     canvas1Context.closePath();
     canvas1Context.fill();
     canvas2Context.stroke();
+    canvasAvgContext.stroke();
 
     window.raf = requestAnimationFrame(draw);
 }
