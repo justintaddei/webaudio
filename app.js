@@ -219,16 +219,6 @@ setInterval(function () {
 
     analyser.getByteTimeDomainData(timeDomainData);
 
-    if (avgX > width) {
-        canvasAvgContext.closePath();
-        canvasAvgContext.clearRect(0, 0, width, height);
-        avgX = 0;
-    }
-    if (avgX === 0) {
-        canvasAvgContext.beginPath();
-        canvasAvgContext.moveTo(avgX, timeDomainData[0] / 255 * height);
-    }
-
     canvasAvgContext.lineTo(avgX, timeDomainData[0] / 255 * height);
     // avgX += avgBarOffset;
     avgX++;
@@ -237,6 +227,7 @@ setInterval(function () {
 function draw() {
     analyser.getByteFrequencyData(frequencyData);
     canvas1Context.clearRect(0, 0, width, height);
+    canvasAvgContext.clearRect(0, 0, width, height);
     if (delay % clearDelay === 0)
         canvas2Context.clearRect(0, 0, width, height);
 
@@ -267,6 +258,16 @@ function draw() {
     }
     // avgHeight /= frequencyBinCount;
     // avgHeight = (avgHeight / 256 * canvasAvg.height) * 1.8;// Increase the height to make it easier to see the peeks and valleys.
+
+    if (avgX > width) {
+        canvasAvgContext.closePath();
+        avgX = 0;
+    }
+
+    if (avgX === 0) {
+        canvasAvgContext.beginPath();
+        canvasAvgContext.moveTo(avgX, timeDomainData[0] / 255 * height);
+    }
 
     canvas1Context.lineTo(width, height);
     canvas2Context.lineTo(width, height / 2);
