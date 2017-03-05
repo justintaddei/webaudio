@@ -232,7 +232,7 @@ setInterval(function () {
     canvasAvgContext.lineTo(avgX, timeDomainData[0] / 255 * height);
     // avgX += avgBarOffset;
     avgX++;
-},4);
+},8);
 
 function draw() {
     analyser.getByteFrequencyData(frequencyData);
