@@ -214,6 +214,9 @@ var avgBarOffset = 1;
 var avgX = 0;
 
 setInterval(function () {
+    if (isPaused)
+        return;
+
     analyser.getByteTimeDomainData(timeDomainData);
 
     if (avgX > width) {
@@ -229,7 +232,7 @@ setInterval(function () {
     canvasAvgContext.lineTo(avgX, timeDomainData[0] / 255 * height);
     // avgX += avgBarOffset;
     avgX++;
-},1);
+},4);
 
 function draw() {
     analyser.getByteFrequencyData(frequencyData);
