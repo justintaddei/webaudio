@@ -8,6 +8,8 @@ var canvasAvg = document.querySelector('#canvasAvg');
 var synthFrequencyLabel = document.querySelector('[for=synthFrequency]');
 var synthFrequencyLabelCount = document.querySelector('[for=synthFrequency] > input');
 var synthFrequency = document.querySelector('#synthFrequency');
+var avgTimeScaleLabelCount = document.querySelector('[for=avgTimeScale] > input');
+var avgTimeScaleVal = document.querySelector('#avgTimeScale');
 var filterFLabel = document.querySelector('[for=filterF]');
 var filterFLabelCount = document.querySelector('[for=filterF] > input');
 var filterF = document.querySelector('#filterF');
@@ -211,6 +213,31 @@ canvas2Context.lineJoin = 'round';
 canvas2Context.lineCap = 'round';
 var avgBarOffset = 1;
 var avgX = 0;
+var avgTime = Date.now();
+audio.addEventListener('play', function () {
+    avgTime = Date.now();
+    changeTimeScale(avgTimeScaleLabelCount.value);
+    if (isPaused) {
+        pause();// Play
+    }
+});
+var avgTimeScale = (1000 * 30);// One minute
+
+var recording = false;
+function recordWaveform(btn) {
+    if (recording) return;
+    recording = true;
+    btn.innerHTML = 'Recording...';
+    audio.currentTime = 0;
+    audio.loop = false;
+    avgTimeScaleLabelCount.value = Math.round(audio.duration) + 1;
+    changeTimeScale(Math.round(audio.duration) + 1);
+    document.querySelector('#pauseAtEnd').checked = true;
+    audio.addEventListener('ended', function () {
+        window.location.href = (canvasAvg.toDataURL())
+    });
+
+}
 
 /*setInterval(function () {
     if (isPaused)
@@ -255,21 +282,28 @@ function draw() {
     min = Math.min.apply(null, timeDomainData) / 255 * height;
     // canvasAvgContext.lineTo(avgX, min / 255 * height);
     // canvasAvgContext.lineTo(avgX, max / 255 * height);
-    canvasAvgContext.fillRect(avgX, min, 1, Math.max(1, max - min));
-    avgX++;
+    canvasAvgContext.fillRect(avgX, min, 1, max - min);
+    avgX = ((Date.now() - avgTime) / avgTimeScale) * width;
     // avgX += avgBarOffset;
     // avgHeight /= frequencyBinCount;
     // avgHeight = (avgHeight / 256 * canvasAvg.height) * 1.8;// Increase the height to make it easier to see the peeks and valleys.
 
     if (avgX > width) {
+        if (document.querySelector('#pauseAtEnd').checked) {
+            pause();
+            document.querySelector('#pauseAtEnd').checked = false;
+            audio.pause();
+            return;
+        }
         // canvasAvgContext.closePath();
         canvasAvgContext.clearRect(0, 0, width, height);
         avgX = 0;
+        avgTime = Date.now();
     }
 
     // if (avgX === 0) {
-        // canvasAvgContext.beginPath();
-        // canvasAvgContext.moveTo(avgX, timeDomainData[0] / 255 * height);
+    // canvasAvgContext.beginPath();
+    // canvasAvgContext.moveTo(avgX, timeDomainData[0] / 255 * height);
     // }
 
     canvas1Context.lineTo(width, height);
@@ -323,6 +357,7 @@ document.querySelector('#track').addEventListener('change', function () {
 });
 
 var canSliderChangeFrequency = true;
+var canSliderChangeTimeScale = true;
 document.querySelector('#smoothing').addEventListener('change', function () {
     analyser.smoothingTimeConstant = this.value;
 });
@@ -330,6 +365,7 @@ document.addEventListener('mousemove', function () {
     analyser.smoothingTimeConstant = document.querySelector('#smoothing').value;
     clearDelay = document.querySelector('#delay').value;
 });
+
 document.querySelector('#delay').addEventListener('change', function () {
     clearDelay = this.value;
 });
@@ -352,6 +388,22 @@ synthFrequencyLabelCount.addEventListener('change', function () {
     synthFrequency.value = synthFrequencyLabelCount.value;
     canSliderChangeFrequency = false;
 });
+function changeTimeScale(val) {
+    avgTimeScale = val * 1000;
+    canvasAvgContext.clearRect(0, 0, width, height);
+    avgX = 0;
+    avgTime = Date.now();
+}
+avgTimeScaleVal.addEventListener('change', function () {
+    changeTimeScale(avgTimeScaleVal.value);
+    avgTimeScaleLabelCount.value = avgTimeScaleVal.value;
+});
+
+avgTimeScaleLabelCount.addEventListener('change', function () {
+    changeTimeScale(avgTimeScaleVal.value);
+    avgTimeScaleVal.value = avgTimeScaleLabelCount.value;
+});
+
 document.querySelector('#filter').addEventListener('change', function () {
     changeFilter(this.value);
 });
