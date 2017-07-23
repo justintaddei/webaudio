@@ -56,6 +56,7 @@ if (navigator.getUserMedia) {
                     if (mediaRecorder.state === 'recording') {
                         mediaRecorder.stop();
                         record.classList.remove('recording');
+                        record.innerHTML = '<i class="material-icons">mic</i><span>Record audio</span>';
                         record.style.display = 'none';
                         record.classList.add('recorded');
                         audio.style.display = '';
@@ -67,6 +68,7 @@ if (navigator.getUserMedia) {
                     } else {
                         mediaRecorder.start(0);
                         record.classList.add('recording');
+                        record.innerHTML = '<i class="material-icons">stop</i><span>Stop recording</span>';
                     }
                 });
 
@@ -227,9 +229,12 @@ var recording = false;
 function recordWaveform(btn) {
     if (recording) return;
     recording = true;
-    btn.innerHTML = 'Recording...';
+    btn.innerHTML = 'Recording . . .';
+    btn.disabled = true;
+    btn.classList.add('red');
     audio.currentTime = 0;
     audio.loop = false;
+    audio.play();
     avgTimeScaleLabelCount.value = Math.round(audio.duration) + 1;
     changeTimeScale(Math.round(audio.duration) + 1);
     document.querySelector('#pauseAtEnd').checked = true;
@@ -321,7 +326,9 @@ var isPaused = false;
 function pause() {
     if (!isPaused) {
         window.cancelAnimationFrame(window.raf);
+        document.getElementById('playpause').innerHTML = '<i class="material-icons">play_arrow</i><span>Play graphics</span>';
     } else {
+        document.getElementById('playpause').innerHTML = '<i class="material-icons">pause</i><span>Pause graphics</span>';
         draw();
     }
     isPaused = !isPaused;
