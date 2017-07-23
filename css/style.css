@@ -25,6 +25,7 @@ body {
     transform: rotate(-45deg);
     background: #26a69a;
     transition: 0.2s;
+    /* box-shadow: 0 16px 24px 2px rgba(0, 0, 0, .14), 0 6px 30px 5px rgba(0, 0, 0, .12), 0 8px 10px -5px rgba(0, 0, 0, .2); */
 }
 
 .logo img {
@@ -33,6 +34,10 @@ body {
     left: 147px;
     width: 130px;
     transform: rotate(45deg);
+}
+
+.logo:hover {
+    transform: rotate(-45deg) scale(1.1);
 }
 
 small {
