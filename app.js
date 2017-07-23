@@ -188,7 +188,11 @@ function changeSource(src) {
     synth = true;
 }
 
-analyser.fftSize = 4096;
+try {
+    analyser.fftSize = 4096;
+} catch (e) {
+    console.log(e);
+}
 
 var frequencyBinCount = analyser.frequencyBinCount;
 var height = canvas1.height;
