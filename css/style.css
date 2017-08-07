@@ -180,7 +180,9 @@ canvas {
 #delete {
     display: none;
 }
-
+#record.recorded {
+    display: none;
+}
 #record.recorded~#delete {
     display: flex;
 }
