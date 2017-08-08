@@ -16,7 +16,6 @@ var filterF = document.querySelector('#filterF');
 var mediaRecorder = false, recordedDataChunks = [], recordedObjUrl = false;
 var record = document.querySelector('#record');
 var deleteRecording = document.querySelector('#delete');
-var saveRecording = document.querySelector('#save');
 var track = document.querySelector('#track');
 record.style.display = 'none';
 

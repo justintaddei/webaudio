@@ -19,93 +19,120 @@
     <div class="video-wrapper">
         <iframe src="https://www.youtube.com/embed/dcKDMBuGodU" frameborder="0" allowfullscreen></iframe>
     </div>
-    <label for="filter">Filter</label>
-    <select id="filter">
-        <option value="none">None</option>
-        <option value="lowpass">Lowpass</option>
-        <option value="highpass">Highpass</option>
-        <option value="lowshelf">Lowshelf</option>
-        <option value="highshelf">Highshelf</option>
-        <option value="bandpass">Bandpass</option>
-    </select>
+    <div class="no-support">
+        Sorry, your browser doesn't support the WebAudioAPI
+        <br>
+        <br> Update your browser or install Google Chrome to view these examples.
+        <a href="https://www.google.com/chrome/browser/desktop/" target="_blank">
+            <button><i class="material-icons">file_download</i><span>Get Chrome</span></button>
+        </a>
+    </div>
+    <div class="supports-web-audio">
+        <hr>
+        <button id="record"><i class="material-icons">mic</i><span>Record audio</span></button>
+        <button id="delete"><i class="material-icons">delete</i><span>Delete recording</span></button>
+        <br>
 
-    <label for="filterF">Filter Frequency (<input type="number">Hz)</label>
-    <input type="range" id="filterF" min="0" max="20000" step="1">
+        <!-- <button id="playpause">
+            <i class="material-icons">pause</i><span>Pause graphics</span>
+        </button> -->
+        <!-- <label for="smoothing">Time Averaging</label>
+        <input type="range" id="smoothing" value="0.8" min="0" max="0.99" step="any"> -->
 
-    <label for="track">Audio source (or drag & drop file to play)</label>
-    <select id="track">
-        <option value="audio14.mp3">Relentless (Kansas)</option>
-        <option value="audio15.mp3">Point of Know Return (Kansas)</option>
-        <option value="audio13.mp3">Magic Man (Heart)</option>
-        <option value="audio12.mp3">Heart Of Glass (Blondie)</option>
-        <option value="audio.mp3">Hungry Like The Wolf (Duran Duran)</option>
-        <option value="audio2.mp3">Is It Over (Kim Wilde)</option>
-        <option value="audio3.mp3">Fading Fast (The Go-Go's')</option>
-        <option value="audio4.mp3">We Got The Beat (The Go-Go's')</option>
-        <option value="audio5.mp3">I'll Be Mellow When I'm Dead (Weird Al)</option>
-        <option value="audio6.mp3">Happy Birthday (Weird Al)</option>
-        <option value="audio7.mp3">I Love Rocky Road (Weird Al)</option>
-        <option value="audio8.mp3">One Tin Soldier (Coven)</option>
-        <option value="audio9.mp3">The Logical Song (Supertramp)</option>
-        <option value="audio10.mp3">Need Your Love (Cheap Trick)</option>
-        <option value="dannytaddei1.mp3">Another Beautiful Day (by Danny Taddei)</option>
-        <option value="dannytaddei2.mp3">I Need To Be Free (by Danny Taddei)</option>
-        <option value="dannytaddei3.mp3">My Imagination (by Danny Taddei)</option>
-        <option value="One Direction - Live While We're Young.mp3">Live While We're Young by One Direction (Example of poor dynamics)</option>
-        <option value="audio11.mp3">Radioactive by Imagine Dragons (Example of poor dynamics)</option>
-        <option value="junk.mp3">Chillin' It by Cole Swindell (Example of poor dynamics)</option>
-        <option value="sine">Sine Wave Oscillator</option>
-        <option value="microphone">Microphone</option>
-    </select>
+        <label for="track">Select song (or drag & drop file to play)</label>
+        <select id="track">
+            <option value="other:oscillator">Oscillator</option>
+            <option value="other:microphone">Microphone</option>
+            <optgroup label="Examples of maximized audio (poor dynamic range)">
+                <option value="audio11.mp3">Radioactive (Imagine Dragons)</option>
+                <option value="One Direction - Live While We're Young.mp3">Live While We're Young by One Direction (Example of poor dynamics)</option>
+                <option value="junk.mp3">Chillin' It (Cole Swindell)</option>
+            </optgroup>
+            <optgroup label="Examples of high dynamic range">
+                <option value="audio15.mp3" selected>Point of Know Return (Kansas)</option>
+                <option value="audio14.mp3">Relentless (Kansas)</option>
+                <option value="audio13.mp3">Magic Man (Heart)</option>
+                <option value="audio12.mp3">Heart Of Glass (Blondie)</option>
+                <option value="audio.mp3">Hungry Like The Wolf (Duran Duran)</option>
+                <option value="audio2.mp3">Is It Over (Kim Wilde)</option>
+                <option value="audio3.mp3">Fading Fast (The Go-Go's')</option>
+                <option value="audio4.mp3">We Got The Beat (The Go-Go's')</option>
+                <option value="audio5.mp3">I'll Be Mellow When I'm Dead (Weird Al)</option>
+                <option value="audio6.mp3">Happy Birthday (Weird Al)</option>
+                <option value="audio7.mp3">I Love Rocky Road (Weird Al)</option>
+                <option value="audio8.mp3">One Tin Soldier (Coven)</option>
+                <option value="audio9.mp3">The Logical Song (Supertramp)</option>
+                <option value="audio10.mp3">Need Your Love (Cheap Trick)</option>
+                <option value="dannytaddei1.mp3">Another Beautiful Day (by Danny Taddei)</option>
+                <option value="dannytaddei2.mp3">I Need To Be Free (by Danny Taddei)</option>
+                <option value="dannytaddei3.mp3">My Imagination (by Danny Taddei)</option>
+            </optgroup>
+        </select>
+        <label for="audioControls" id="currentTime">00:00/00:00</label>
+        <canvas id="audioControls"></canvas>
 
-    <button id="record"><i class="material-icons">mic</i><span>Record audio</span></button>
-    <button id="delete"><i class="material-icons">delete</i><span>Delete recording</span></button>
-    <br>
+        <audio hidden src="#"></audio>
 
-    <button id="playpause" onclick="pause();">
-        <i class="material-icons">pause</i><span>Pause graphics</span>
-    </button>
-    <label for="smoothing">Time Averaging</label>
-    <input type="range" id="smoothing" value="0.8" min="0" max="0.99" step="any">
+        <button id="recordWaveform">
+            <i class="material-icons">save</i><span>Record waveform</span>
+        </button>
+        <br>
+        <label for="filter">Filter</label>
+        <select id="filter">
+            <option value="allpass">None</option>
+            <option value="lowpass">Lowpass</option>
+            <option value="highpass">Highpass</option>
+            <option value="lowshelf">Lowshelf</option>
+            <option value="highshelf">Highshelf</option>
+            <option value="bandpass">Bandpass</option>
+            <option value="notch">Notch</option>
+        </select>
+        <br>
+        <label for="timeScale">Scale (<input type="number" value="60">Secounds)</label>
+        <input type="range" id="timeScale" value="30" min="1" max="180" step="1">
 
-    <audio src="audio14.mp3" controls></audio>
-    <button onclick="recordWaveform(this);">
-        <i class="material-icons">save</i><span>Record waveform</span></button>
-    <br>
-    <br>
-    <label for="avgTimeScale">Scale (<input type="number" value="30">Secounds)</label>
-    <input type="range" id="avgTimeScale" value="30" min="1" max="180" step="1">
+        <label for="pauseAtEnd">
+            <input hidden type="checkbox" id="pauseAtEnd">
+            <div class="switch">
+                <div class="thumb"></div>
+            </div>
+            Pause at end of frame
+        </label>
 
-    <label for="pauseAtEnd">
-        <input hidden type="checkbox" id="pauseAtEnd">
-        <div class="switch">
-            <div class="thumb"></div>
+        <div class="canvas-name">
+            <div class="text">Waveform (over time)</div>
+            <canvas id="waveformOverTime"></canvas>
         </div>
-        Pause at end of frame
-    </label>
+        <label for="filterFrequency">Filter Frequency (<input type="number">Hz)</label>
+        <input type="range" id="filterFrequency" min="0" max="24000" step="1">
+        <div class="canvas-name">
+            <div class="text">Frequency domain</div>
+            <canvas id="frequencyDomain"></canvas>
+        </div>
 
-    <div class="canvas-name">
-        <div class="text">Waveform (over time)</div>
-        <canvas id="canvasAvg"></canvas>
+
+        <label for="oscillatorFrequency">Oscillator Frequency (<input type="number" value="432">Hz)</label>
+        <input type="range" id="oscillatorFrequency" value="432" min="0" max="24000" step="1">
+
+        <label for="oscillatorType">Oscillator Type</label>
+        <select id="oscillatorType">
+            <option value="sine" selected>Sine Wave</option>
+            <option value="sawtooth">Sawtooth Wave</option>
+            <option value="square">Square Wave</option>
+            <option value="triangle">Triangle Wave</option>
+        </select>
+
+        <div class="canvas-name">
+            <div class="text">Waveform</div>
+            <canvas id="waveform"></canvas>
+        </div>
+
+        <!-- Not sure why I made this option -->
+        <!-- <label for="delay">Clear Rate</label>
+        <input type="range" id="delay" value="1" min="1" max="300" step="1"> -->
+
+        <div id="dragdrop">Drop audio file here to play</div>
     </div>
-    <div class="canvas-name">
-        <div class="text">Frequency domain</div>
-        <canvas id="canvas1"></canvas>
-    </div>
-
-    <label for="synthFrequency">Frequency (<input type="number" value="432">Hz)</label>
-    <input type="range" id="synthFrequency" value="432" min="0" max="22050" step="1">
-
-    <div class="canvas-name">
-        <div class="text">Waveform</div>
-        <canvas id="canvas2"></canvas>
-    </div>
-
-    <!-- Not sure why I made this option -->
-    <label for="delay">Clear Rate</label>
-    <input type="range" id="delay" value="1" min="1" max="300" step="1">
-
-    <div id="dragdrop">Drop audio file here to play</div>
 
     <small>
         <strong>Legal information:</strong>
@@ -121,7 +148,10 @@
         by that section, for purposes such as criticism, comment, news reporting, teaching (including multiple copies for
         classroom use), scholarship, or research, is not an infringement of copyright. . . .
     </small>
-    <script src="app.js"></script>
+
+    <!-- <script src="app.js"></script> -->
+    <script src="/js/supports.js"></script>
+    <script src="/js/app.js"></script>
 </body>
 
 </html>
