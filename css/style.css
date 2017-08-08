@@ -177,7 +177,7 @@ canvas {
     height: 100%;
     box-sizing: border-box;
     border: 8px dashed darkslategrey;
-    background: lightgreen;
+    background: #26a69a;
     display: flex;
     pointer-events: none;
     color: darkslategrey;
@@ -186,9 +186,9 @@ canvas {
     justify-content: center;
     align-items: center;
     transition: all 0.2s;
-    transform: rotate(90deg);
+    /* transform: rotate(90deg); */
     transform-origin: top left;
-    opacity: 0;
+     opacity: 0;
 }
 
 #dragdrop.show {

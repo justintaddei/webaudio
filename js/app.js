@@ -208,7 +208,7 @@ class AudioControls {
             this.mousedown = true;
             let pointer = this.normalizeInput(e);
             let r = Math.sqrt(Math.pow(pointer.x, 2) + Math.pow(pointer.y, 2));
-            if (r > this.rect.width/2 * 0.75) {
+            if (r > this.rect.width / 2 * 0.75) {
                 this.seeking = true;
                 this.onMove(e);
             }
@@ -776,6 +776,10 @@ class Visualizer {
             this.resetSource();
             this.srcIsMP3 = false;
 
+            if (this.droppedFile)
+                URL.revokeObjectURL(this.droppedFile);
+            this.droppedFile = false;
+
             switch (this.trackSelector.value) {
                 case 'other:oscillator':
                     this.useOscillator();
@@ -793,6 +797,41 @@ class Visualizer {
             }
             this.play();
         });
+
+        document.addEventListener('dragover', e => {
+            e.preventDefault();
+            document.querySelector('#dragdrop').classList.add('show');
+            return false;
+        }, false);
+
+        document.addEventListener('dragleave', () => {
+            document.querySelector('#dragdrop').classList.remove('show');
+        }, false);
+
+        document.addEventListener('drop', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelector('#dragdrop').classList.remove('show');
+
+            if (!e.dataTransfer.files[0] || !/audio|video/i.test(e.dataTransfer.files[0].type)) {
+                return false;
+            }
+
+
+            this.pause();
+            this.clearAll();
+            this.resetSource();
+            this.srcIsMP3 = true;
+            this.droppedFile = URL.createObjectURL(e.dataTransfer.files[0]);
+            this.audio.src = this.droppedFile;
+            this.showAuxControls('filterType');
+
+            if (this.filter.type !== 'allpass')
+                this.showAuxControls('filterFrequency');
+
+            this.play();
+            return false;
+        }, false);
 
         // Change time scale
         let timeScale = document.querySelector('#timeScale');
