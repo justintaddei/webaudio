@@ -1,6 +1,7 @@
 * {
     -webkit-tap-highlight-color: transparent;
 }
+
 h1 {
     font-family: 'Roboto';
     font-size: 50px;
@@ -69,6 +70,41 @@ hr {
 
 [for="track"] {
     font-size: 30px;
+    position: relative;
+}
+
+[for="track"]:before {
+    content: 'Click here to select a song';
+    font-size: 20px;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: calc(45% - 55px);
+    height: 95px;
+    background: #26a69a;
+    top: 0;
+    right: calc(100% + 45px);
+    border-radius: 6px;
+    z-index: 1;
+    color: #fff;
+}
+
+[for="track"]:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 67px;
+    height: 67px;
+    background: #26a69a;
+    /* background: red; */
+    top: 14px;
+    left: -81px;
+    border-radius: 4px;
+    transform: rotate(45deg);
 }
 
 #track {
@@ -186,14 +222,12 @@ canvas {
     justify-content: center;
     align-items: center;
     transition: all 0.2s;
-    /* transform: rotate(90deg); */
     transform-origin: top left;
-     opacity: 0;
+    opacity: 0;
 }
 
 #dragdrop.show {
     opacity: 0.9;
-    transform: none;
 }
 
 #record,
