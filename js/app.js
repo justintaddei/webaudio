@@ -70,15 +70,319 @@ class Recorder {
 
 }
 
+class AudioControls {
+    constructor(visualizer, canvas) {
+        this.time = document.querySelector('#currentTime');
+        this.visualizer = visualizer;
+        this.canvas = canvas;
+        this.ctx = this.canvas.getContext('2d');
+        this.rect = this.canvas.getBoundingClientRect();
+
+        this.canvas.width = this.rect.width;
+        this.canvas.height = this.rect.height;
+
+        this.colors = {
+            main: '#26a69a',
+            background: '#333',
+            disabled: 'rgba(255, 255, 255, 0.5)'
+        }
+
+        this.TAU = Math.PI * 2;
+        this.NINETY_DEGREES = 1.57079633;
+        this.SIXTY_DEGREES = 1.04719755;
+
+        this.addEventListeners();
+        this.animationLoop();
+    }
+
+    get paused() {
+        return this.visualizer.audio.paused;
+    }
+
+    getCurrentTimeAsPercentage() {
+        if (this.seeking)
+            return this.currentSeekTime / this.visualizer.audio.duration;
+        else
+            return this.visualizer.audio.currentTime / this.visualizer.audio.duration;
+    }
+
+
+    play() {
+        this.visualizer.audio.play();
+    }
+
+    pause() {
+        if (this.visualizer.recordingWaveform)
+            return;
+
+        this.visualizer.audio.pause();
+    }
+
+    togglePlayState() {
+        if (this.seeking) {
+            this.seeking = false;
+            return;
+        }
+
+        if (this.paused)
+            this.play();
+        else
+            this.pause();
+    }
+
+    setTime(timeString) {
+        this.time.innerHTML = timeString || '';
+    }
+
+    timeUpdate(e, currentTime) {
+        if (typeof currentTime === 'undefined' && this.seeking)
+            return;
+
+        var sec = new Number();
+        var min = new Number();
+        sec = Math.floor(this.visualizer.audio.duration);
+        min = Math.floor(sec / 60);
+        min = min >= 10 ? min : '0' + min;
+        sec = Math.floor(sec % 60);
+        sec = sec >= 10 ? sec : '0' + sec;
+
+        var sec2 = new Number();
+        var min2 = new Number();
+        sec2 = Math.floor(currentTime || this.visualizer.audio.currentTime);
+        min2 = Math.floor(sec2 / 60);
+        min2 = min2 >= 10 ? min2 : '0' + min2;
+        sec2 = Math.floor(sec2 % 60);
+        sec2 = sec2 >= 10 ? sec2 : '0' + sec2;
+
+        this.currentTime = min2 + ':' + sec2;
+        this.totalTIme = min + ':' + sec;
+
+        if (this.currentTime.indexOf('NaN') > -1)
+            this.currentTime = '00:00';
+
+        if (this.totalTIme.indexOf('NaN') > -1)
+            this.totalTIme = '00:00';
+
+        this.setTime(this.currentTime + '/' + this.totalTIme);
+    }
+
+    normalizeInput(e) {
+        let pointer = e.touches ? e.touches[0] : e;
+        let x = pointer.clientX;
+        let y = pointer.clientY;
+        let rect = this.canvas.getBoundingClientRect();
+        x -= rect.left + rect.width / 2;
+        y -= rect.top + rect.height / 2;
+
+        return {
+            x: x,
+            y: y
+        }
+    }
+
+    onMove(e) {
+        let pointer = this.normalizeInput(e);
+
+        let theta = Math.atan2(pointer.y, pointer.x) + Math.PI * 0.5;
+        if (theta < 0)
+            theta = this.TAU + theta;
+
+        this.currentSeekTime = theta / this.TAU * this.visualizer.audio.duration;
+        this.timeUpdate(null, this.currentSeekTime);
+    }
+
+    addEventListeners() {
+        this.visualizer.audio.addEventListener('play', this.play.bind(this));
+        this.visualizer.audio.addEventListener('pause', this.pause.bind(this));
+        this.visualizer.audio.addEventListener('timeupdate', this.timeUpdate.bind(this));
+
+        this.canvas.addEventListener('click', this.togglePlayState.bind(this));
+
+        this.animationLoop = this.animationLoop.bind(this);
+
+        // Switch between clicking and dragging
+        let down = e => {
+            if (this.visualizer.recordingWaveform)
+                return;
+
+            this.mousedown = true;
+            let pointer = this.normalizeInput(e);
+            let r = Math.sqrt(Math.pow(pointer.x, 2) + Math.pow(pointer.y, 2));
+            if (r > this.rect.width/2 * 0.75) {
+                this.seeking = true;
+                this.onMove(e);
+            }
+        };
+        let move = e => {
+            if (!this.mousedown)
+                return;
+
+            e.preventDefault();
+            this.seeking = true;
+            this.onMove(e);
+            return false;
+        };
+        let up = e => {
+            this.mousedown = false;
+
+            if (this.seeking) {
+                this.visualizer.audio.currentTime = this.currentSeekTime;
+            }
+
+            if (this.seeking && e.target !== this.canvas)
+                this.togglePlayState();
+        };
+
+        this.canvas.addEventListener('mousedown', down);
+        this.canvas.addEventListener('touchstart', down);
+        document.addEventListener('mousemove', move);
+        document.addEventListener('touchmove', move, {
+            passive: false
+        });
+        document.addEventListener('mouseup', up);
+        document.addEventListener('touchend', up);
+    }
+
+    triangle(sideLength, cx, cy) {
+
+        const h = sideLength * (Math.sqrt(3) / 2);
+
+        this.ctx.save();
+        this.ctx.translate(cx, cy);
+
+        this.ctx.beginPath();
+
+        this.ctx.moveTo(0, -h / 2);
+        this.ctx.lineTo(-sideLength / 2, h / 2);
+        this.ctx.lineTo(sideLength / 2, h / 2);
+
+        this.ctx.closePath();
+        this.ctx.restore();
+    }
+
+    rotate(x, y, degs) {
+        this.ctx.translate(x, y);
+        this.ctx.rotate(degs);
+        this.ctx.translate(-x, -y);
+    }
+
+    drawPlayButton(mid) {
+        const buttonWidth = 43.301;
+
+        this.ctx.save();
+
+        this.ctx.beginPath();
+        this.ctx.arc(mid, mid, mid * 0.752, 0, this.TAU);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.colors.main;
+        this.ctx.fill();
+
+        this.rotate(mid, mid, this.NINETY_DEGREES);
+
+        this.triangle(50, mid, mid - 3.5);
+        this.ctx.fillStyle = this.colors.background;
+        this.ctx.fill();
+
+        this.ctx.restore();
+    }
+
+    drawAmplitude(mid) {
+        const buttonWidth = 43.301;
+        const barWidth = 15;
+
+        this.ctx.save();
+
+        this.ctx.beginPath();
+        this.ctx.translate(mid, mid);
+
+        // const scale = this.visualizer.currentAmplitude + 0.8;
+        // this.ctx.scale(scale, scale);
+        let smallest = buttonWidth * 1.05;
+        let biggest = mid * 0.75;
+
+        let circleRadius = smallest + (biggest - smallest) * this.visualizer.currentAmplitude;
+        if (isNaN(circleRadius))
+            circleRadius = smallest;
+        this.ctx.arc(0, 0, circleRadius, 0, this.TAU);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.colors.main;
+        this.ctx.fill();
+
+        this.ctx.restore();
+    }
+
+    drawPauseButton(mid) {
+        const buttonWidth = 43.301;
+        const barWidth = 15;
+
+        this.drawAmplitude(mid);
+
+        this.ctx.fillStyle = this.colors.background;
+        this.ctx.fillRect(mid - buttonWidth / 2, mid - 25, barWidth, 50);
+        this.ctx.fillRect((mid + buttonWidth / 2) - barWidth, mid - 25, barWidth, 50);
+
+    }
+
+    animationLoop() {
+        this.colors.main = this.visualizer.recordingWaveform ? '#ef5350' : this.colors.main;
+        const mid = this.rect.width * 0.5;
+
+        this.ctx.restore();
+        this.ctx.save();
+
+        this.ctx.clearRect(0, 0, this.rect.width, this.rect.height);
+
+        this.rotate(mid, mid, -this.NINETY_DEGREES);
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(mid, mid);
+        this.ctx.arc(mid, mid, mid, 0, this.getCurrentTimeAsPercentage() * this.TAU);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.colors.main;
+        this.ctx.fill();
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(mid, mid);
+        this.ctx.arc(mid, mid, mid * 0.75, 0, this.TAU);
+        this.ctx.closePath();
+        this.ctx.fillStyle = '#222';
+        this.ctx.fill();
+
+        this.ctx.beginPath();
+        this.ctx.moveTo(mid, mid);
+        this.ctx.arc(mid, mid, mid * 0.75 - 4, 0, this.TAU);
+        this.ctx.closePath();
+        this.ctx.fillStyle = this.colors.background;
+        this.ctx.fill();
+
+        this.ctx.restore();
+        if (this.paused)
+            this.drawPlayButton(mid);
+        else if (this.visualizer.recordingWaveform)
+            this.drawAmplitude(mid);
+        else
+            this.drawPauseButton(mid);
+
+
+        if (!this.visualizer.srcIsMP3) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(mid, mid);
+            this.ctx.arc(mid, mid, mid, 0, this.TAU);
+            this.ctx.closePath();
+            this.ctx.fillStyle = this.colors.disabled;
+            this.ctx.fill();
+        }
+
+        queueFrame(this.animationLoop);
+    }
+}
 
 class Visualizer {
     constructor() {
 
         // If the WebAudio API doesn't exist, return
-        if (!SUPPORTS_WEB_AUDIO) {
-            document.body.classList.add('no-support');
+        if (!SUPPORTS_WEB_AUDIO)
             return;
-        }
 
         if (!SUPPORTS_MEDIA_RECORDER) {
             document.querySelector('[value="other:microphone"]')
@@ -87,6 +391,11 @@ class Visualizer {
 
         this.audio = document.querySelector('audio');
         this.audioContext = new WEB_AUDIO();// AudioContext, prefixed if necessary
+
+        this.audioControls = new AudioControls(
+            this,
+            document.querySelector('#audioControls')
+        );
 
         this.source = this.audioContext.createMediaElementSource(this.audio);
         this.trackSelector = document.querySelector('#track');
@@ -108,7 +417,7 @@ class Visualizer {
         this.analyser = this.audioContext.createAnalyser();
         // The analyser will always be the last device before the destination unless output is muted
         this.analyser.connect(this.audioContext.destination);
-        this.defaultSmoothingTimeConstant = this.analyser.smoothingTimeConstant;
+        this.defaultSmoothingTimeConstant = this.analyser.smoothingTimeConstant = 0.5;
 
         this.muteGain = this.audioContext.createGain();
         this.muted = false;
@@ -172,6 +481,8 @@ class Visualizer {
         this.lastTimeX = 0;
         this.timeMax = 0;
         this.timeMin = 0;
+
+        this.currentAmplitude = 0;
 
         this.frequencyWidth = this.width / this.frequencyBinCount;
 
@@ -291,11 +602,13 @@ class Visualizer {
         this.timeMin = Math.min.apply(null, this.waveformData) / 255 * this.height;
 
 
+
         let frequencyXOffset = 0;
+        let avg = 0, avgNum = 0;
 
         let barHeight, barYOffset;
         for (let i = 0; i < this.frequencyBinCount; i++) {
-            barHeight = this.frequencyData[i] / 256 * this.height;
+            barHeight = this.frequencyData[i] / 255 * this.height;
             barYOffset = this.height - barHeight;
             this.frequencyDomainContext.lineTo(frequencyXOffset, barYOffset);
 
@@ -307,7 +620,18 @@ class Visualizer {
             }
 
             frequencyXOffset += this.frequencyWidth;
+            // if (i <= 100)
+            if (this.frequencyData[i] !== 0) {
+                avg += this.frequencyData[i];
+                avgNum++;
+            }
         }
+
+
+        // this.currentAmplitude = (this.timeMax - this.timeMin) / this.height;
+        this.currentAmplitude = avg / avgNum / 255;
+        // this.currentAmplitude = Math.max.apply(null,this.frequencyData)/255;
+
         if (timeX > this.width) {
             if (this.pauseAtEnd) {
                 this.pause();
@@ -550,17 +874,17 @@ class Visualizer {
         document.addEventListener('mouseup', mouseup);
 
         let recordWaveform = document.querySelector('#recordWaveform');
-        let recordingWaveform = false;
+        this.recordingWaveform = false;
         recordWaveform.addEventListener('click', e => {
-            if (recordingWaveform)
+            if (this.recordingWaveform)
                 return;
 
-            recordingWaveform = true;
+            this.recordingWaveform = true;
             recordWaveform.classList.add('red');
             recordWaveform.disabled = true;
             recordWaveform.innerHTML = '<i class="material-icons">radio_button_checked</i> Recording . . .';
-
             this.clearAll();
+            this.hideAuxControls();
             this.audio.currentTime = 0;
             this.play();
             timeScaleDetail.value = Math.ceil(this.audio.duration);

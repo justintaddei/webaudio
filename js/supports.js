@@ -11,6 +11,10 @@ const removeFrameFromQueue = (cancelAnimationFrame || webkitCancelAnimationFrame
     return clearTimeout(fn, 16);
 });
 
+if (SUPPORTS_WEB_AUDIO)
+    document.body.classList.add('web-audio-support');
+else
+    document.body.classList.add('no-web-audio-support');
 
 // From https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 // Older browsers might not implement mediaDevices at all, so we set an empty object first

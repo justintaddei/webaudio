@@ -28,6 +28,7 @@
         </a>
     </div>
     <div class="supports-web-audio">
+        <hr>
         <button id="record"><i class="material-icons">mic</i><span>Record audio</span></button>
         <button id="delete"><i class="material-icons">delete</i><span>Delete recording</span></button>
         <br>
@@ -38,7 +39,7 @@
         <!-- <label for="smoothing">Time Averaging</label>
         <input type="range" id="smoothing" value="0.8" min="0" max="0.99" step="any"> -->
 
-        <label for="track">Audio source (or drag & drop file to play)</label>
+        <label for="track">Select song (or drag & drop file to play)</label>
         <select id="track">
             <option value="other:oscillator">Oscillator</option>
             <option value="other:microphone">Microphone</option>
@@ -67,7 +68,10 @@
                 <option value="dannytaddei3.mp3">My Imagination (by Danny Taddei)</option>
             </optgroup>
         </select>
-        <audio controls></audio>
+        <label for="audioControls" id="currentTime">00:00/00:00</label>
+        <canvas id="audioControls"></canvas>
+
+        <audio hidden src="#"></audio>
 
         <button id="recordWaveform">
             <i class="material-icons">save</i><span>Record waveform</span>
