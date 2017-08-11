@@ -68,6 +68,20 @@ hr {
     height: 2px;
 }
 
+p {
+    font-size: 20px;
+    font-family: 'roboto', Arial;
+}
+
+.no-support p button {
+    margin: 15px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 [for="track"] {
     font-size: 30px;
     position: relative;
