@@ -100,9 +100,9 @@ class AudioControls {
     }
 
     getCurrentTimeAsPercentage() {
-        if (this.seeking)
+        if (this.seeking) {
             return this.currentSeekTime / this.visualizer.audio.duration;
-        else
+        } else
             return this.visualizer.audio.currentTime / this.visualizer.audio.duration;
     }
 
