@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "dom",
+            "es6"
+        ],
+        "outDir": "./js",
+        "module": "es6",
+        "sourceMap": true,
+        "target": "es6"
+    },
+    "files": [
+        "./ts/main.ts"
+    ]
+}

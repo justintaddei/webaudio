@@ -1,0 +1,22 @@
+{
+  "name": "webaudio",
+  "version": "1.0.0",
+  "description": "WebAudio Demo",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justintaddei/webaudio.git"
+  },
+  "keywords": [
+    "webaudio"
+  ],
+  "author": "Justin D. Taddei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/justintaddei/webaudio/issues"
+  },
+  "homepage": "https://github.com/justintaddei/webaudio#readme"
+}

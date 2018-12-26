@@ -6,12 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Roboto|Material+Icons" rel="stylesheet">
-    <link href="dest/css/style.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
     <meta property="og:image" content="https://swordmaster1000.github.io/WebAudioAPI/fb.jpg" />
 </head>
 
 <body>
-    <a class="logo" href="http://jtprogramming.com" target="_blank" rel="noopener"><img src="http://jtprogramming.com/imgs/logo.png" alt="Justin Taddei's logo"></a>
+    <a class="logo" href="http://jtprogramming.com" target="_blank" rel="noopener"><img src="http://jtprogramming.com/imgs/logo.png"
+            alt="Justin Taddei's logo"></a>
     <h1>
         WebAudio
         <br>Experiment
@@ -19,7 +20,7 @@
     <div class="video-wrapper">
         <iframe src="https://www.youtube.com/embed/dcKDMBuGodU" frameborder="0" allowfullscreen></iframe>
     </div>
-    <div class="no-support">
+    <!-- <div class="no-support">
         <p>
             Sorry, your browser doesn't support the WebAudioAPI
             <br>
@@ -28,12 +29,12 @@
                 <button><i class="material-icons">file_download</i><span>Get Chrome</span></button>
             </a>
         </p>
-    </div>
+    </div> -->
     <div class="supports-web-audio">
         <hr>
-        <button id="record"><i class="material-icons">mic</i><span>Record audio</span></button>
+        <!-- <button id="record"><i class="material-icons">mic</i><span>Record audio</span></button>
         <button id="delete"><i class="material-icons">delete</i><span>Delete recording</span></button>
-        <br>
+        <br> -->
 
         <!-- <button id="playpause">
             <i class="material-icons">pause</i><span>Pause graphics</span>
@@ -43,16 +44,15 @@
 
         <label for="track">Select song (or drag & drop file to play)</label>
         <select id="track">
-            <option value="other:oscillator">Oscillator</option>
-            <option value="other:microphone">Microphone</option>
             <optgroup label="Examples of maximized audio (poor dynamic range)">
                 <option value="audio/audio11.mp3">Radioactive (Imagine Dragons)</option>
-                <option value="audio/One Direction - Live While We're Young.mp3">Live While We're Young by One Direction (Example of poor dynamics)</option>
+                <option value="audio/One Direction - Live While We're Young.mp3">Live While We're Young by One
+                    Direction (Example of poor dynamics)</option>
                 <option value="audio/junk.mp3">Chillin' It (Cole Swindell)</option>
             </optgroup>
             <optgroup label="Examples of high dynamic range">
                 <option value="audio/audio15.mp3" selected>Point of Know Return (Kansas)</option>
-                <option value="audio/audio14.mp3">Relentless (Kansas)</option>
+                <option value="audio/dannytaddei1.mp3">Another Beautiful Day (by Danny Taddei)</option>
                 <option value="audio/audio13.mp3">Magic Man (Heart)</option>
                 <option value="audio/audio12.mp3">Heart Of Glass (Blondie)</option>
                 <option value="audio/audio.mp3">Hungry Like The Wolf (Duran Duran)</option>
@@ -60,25 +60,34 @@
                 <option value="audio/audio3.mp3">Fading Fast (The Go-Go's')</option>
                 <option value="audio/audio4.mp3">We Got The Beat (The Go-Go's')</option>
                 <option value="audio/audio5.mp3">I'll Be Mellow When I'm Dead (Weird Al)</option>
-                <option value="audio/audio6.mp3">Happy Birthday (Weird Al)</option>
-                <option value="audio/audio7.mp3">I Love Rocky Road (Weird Al)</option>
                 <option value="audio/audio8.mp3">One Tin Soldier (Coven)</option>
                 <option value="audio/audio9.mp3">The Logical Song (Supertramp)</option>
-                <option value="audio/audio10.mp3">Need Your Love (Cheap Trick)</option>
-                <option value="audio/dannytaddei1.mp3">Another Beautiful Day (by Danny Taddei)</option>
-                <option value="audio/dannytaddei2.mp3">I Need To Be Free (by Danny Taddei)</option>
-                <option value="audio/dannytaddei3.mp3">My Imagination (by Danny Taddei)</option>
             </optgroup>
         </select>
         <label for="audioControls" id="currentTime">00:00/00:00</label>
         <canvas id="audioControls"></canvas>
 
+        <label for="maximize">
+            <input hidden type="checkbox" id="maximize">
+            <div class="switch">
+                <div class="thumb"></div>
+            </div>
+            Maximize track
+        </label>
+
+        <div id="maximizerControls" style="display: none;">
+            <label>Threshold:</label>
+            <input type="range" id="preGain" value="0" min="0" max="100" step="1">
+            <label>Post gain:</label>
+            <input type="range" id="postGain" value="1" min="1" max="40" step="0.001">
+        </div>
+
         <audio hidden src="#"></audio>
 
-        <button id="recordWaveform">
+        <!-- <button id="recordWaveform">
             <i class="material-icons">save</i><span>Record waveform</span>
-        </button>
-        <br>
+        </button> -->
+        <!-- <br>
         <label for="filter">Filter</label>
         <select id="filter">
             <option value="allpass">None</option>
@@ -99,30 +108,31 @@
                 <div class="thumb"></div>
             </div>
             Pause at end of frame
-        </label>
+        </label> -->
 
         <div class="canvas-name">
             <div class="text">Waveform (over time)</div>
             <canvas id="waveformOverTime"></canvas>
+            <div id="threshold" class="maximizer-threshold"></div>
         </div>
-        <label for="filterFrequency">Filter Frequency (<input type="number">Hz)</label>
-        <input type="range" id="filterFrequency" min="0" max="24000" step="1">
+        <!-- <label for="filterFrequency">Filter Frequency (<input type="number">Hz)</label>
+        <input type="range" id="filterFrequency" min="0" max="24000" step="1"> -->
         <div class="canvas-name">
             <div class="text">Frequency domain</div>
             <canvas id="frequencyDomain"></canvas>
         </div>
 
 
-        <label for="oscillatorFrequency">Oscillator Frequency (<input type="number" value="432">Hz)</label>
-        <input type="range" id="oscillatorFrequency" value="432" min="0" max="24000" step="1">
+        <!-- <label for="oscillatorFrequency">Oscillator Frequency (<input type="number" value="432">Hz)</label>
+        <input type="range" id="oscillatorFrequency" value="432" min="0" max="24000" step="1"> -->
 
-        <label for="oscillatorType">Oscillator Type</label>
+        <!-- <label for="oscillatorType">Oscillator Type</label>
         <select id="oscillatorType">
             <option value="sine" selected>Sine Wave</option>
             <option value="sawtooth">Sawtooth Wave</option>
             <option value="square">Square Wave</option>
             <option value="triangle">Triangle Wave</option>
-        </select>
+        </select> -->
 
         <div class="canvas-name">
             <div class="text">Waveform</div>
@@ -139,20 +149,25 @@
     <small>
         <strong>Legal information:</strong>
         <br>
-         The use of copyrighted works on this website is intended for educational purposes&mdash;to teach individuals about the damage
+        The use of copyrighted works on this website is intended for educational purposes&mdash;to teach individuals
+        about the damage
         done to digital audio as the result of using maximizers in the production such audio.
         <br>The use of copyrighted works
         in this context is permitted by <strong>Title 17 U.S. Code § 107</strong>
         <br>
-        <br><strong><a href="https://www.gpo.gov/fdsys/pkg/USCODE-2010-title17/html/USCODE-2010-title17-chap1-sec107.htm" target="_blank" rel="noopener">§107. Limitations on exclusive rights: Fair use</a></strong>
+        <br><strong><a href="https://www.gpo.gov/fdsys/pkg/USCODE-2010-title17/html/USCODE-2010-title17-chap1-sec107.htm"
+                target="_blank" rel="noopener">§107. Limitations on exclusive rights: Fair use</a></strong>
         <br>. . . the fair use of
-        a copyrighted work, including such use by reproduction in copies or phonorecords or by any other means specified
-        by that section, for purposes such as criticism, comment, news reporting, teaching (including multiple copies for
+        a copyrighted work, including such use by reproduction in copies or phonorecords or by any other means
+        specified
+        by that section, for purposes such as criticism, comment, news reporting, teaching (including multiple copies
+        for
         classroom use), scholarship, or research, is not an infringement of copyright. . . .
     </small>
 
-    <script defer src="dest/js/supports.min.js"></script>
-    <script defer src="dest/js/app.min.js"></script>
+    <!-- <script defer src="dest/js/supports.min.js"></script> -->
+    <!-- <script defer src="dest/js/app.min.js"></script> -->
+    <script defer type="module" src="js/main.js"></script>
 </body>
 
 </html>
