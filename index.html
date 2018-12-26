@@ -115,34 +115,22 @@
             <canvas id="waveformOverTime"></canvas>
             <div id="threshold" class="maximizer-threshold"></div>
         </div>
-        <!-- <label for="filterFrequency">Filter Frequency (<input type="number">Hz)</label>
-        <input type="range" id="filterFrequency" min="0" max="24000" step="1"> -->
+
         <div class="canvas-name">
-            <div class="text">Frequency domain</div>
-            <canvas id="frequencyDomain"></canvas>
+            <div class="text">Spectrogram</div>
+            <canvas id="spectrogram"></canvas>
         </div>
 
-
-        <!-- <label for="oscillatorFrequency">Oscillator Frequency (<input type="number" value="432">Hz)</label>
-        <input type="range" id="oscillatorFrequency" value="432" min="0" max="24000" step="1"> -->
-
-        <!-- <label for="oscillatorType">Oscillator Type</label>
-        <select id="oscillatorType">
-            <option value="sine" selected>Sine Wave</option>
-            <option value="sawtooth">Sawtooth Wave</option>
-            <option value="square">Square Wave</option>
-            <option value="triangle">Triangle Wave</option>
-        </select> -->
+        <div class="canvas-name">
+            <div class="text">Frequency graph</div>
+            <canvas id="frequencyDomain"></canvas>
+        </div>
 
         <div class="canvas-name">
             <div class="text">Waveform</div>
             <canvas id="waveform"></canvas>
         </div>
-
-        <!-- Not sure why I made this option -->
-        <!-- <label for="delay">Clear Rate</label>
-        <input type="range" id="delay" value="1" min="1" max="300" step="1"> -->
-
+        
         <div id="dragdrop">Drop audio file here to play</div>
     </div>
 

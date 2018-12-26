@@ -2,9 +2,11 @@ export class Visualizer {
     private waveformOverTimeCanvas: HTMLCanvasElement = document.querySelector('#waveformOverTime');
     private frequencyDomainCanvas: HTMLCanvasElement = document.querySelector('#frequencyDomain');
     private waveformCanvas: HTMLCanvasElement = document.querySelector('#waveform');
+    private spectrogramCanvas: HTMLCanvasElement = document.querySelector('#spectrogram');
     private waveformOverTimeCtx: CanvasRenderingContext2D;
     private frequencyDomainCtx: CanvasRenderingContext2D;
     private waveformCtx: CanvasRenderingContext2D;
+    private spectrogramCtx: CanvasRenderingContext2D;
 
     public analyser: AnalyserNode;
     public onAmplitudeChange: (a: number) => void = () => { };
@@ -13,6 +15,7 @@ export class Visualizer {
         width: number;
         height: number;
         frequencyBarWidth: number;
+        frequencyBarHeight: number;
     }
 
     private timeData = {
@@ -75,6 +78,7 @@ export class Visualizer {
         this.waveformOverTimeCtx = this.waveformOverTimeCanvas.getContext('2d');
         this.frequencyDomainCtx = this.frequencyDomainCanvas.getContext('2d');
         this.waveformCtx = this.waveformCanvas.getContext('2d');
+        this.spectrogramCtx = this.spectrogramCanvas.getContext('2d');
 
         this.analyser = audioContext.createAnalyser();
 
@@ -93,7 +97,8 @@ export class Visualizer {
         this.canvasProperties = {
             height: height,
             width: width,
-            frequencyBarWidth: width / this.frequencyBinCount
+            frequencyBarWidth: width / this.frequencyBinCount,
+            frequencyBarHeight: height / this.frequencyBinCount
         }
 
         // Update size of canvases
@@ -103,6 +108,8 @@ export class Visualizer {
         this.frequencyDomainCanvas.height = this.canvasProperties.height;
         this.waveformCanvas.width = this.canvasProperties.width;
         this.waveformCanvas.height = this.canvasProperties.height;
+        this.spectrogramCanvas.width = this.canvasProperties.width;
+        this.spectrogramCanvas.height = this.canvasProperties.height;
 
         // Colors
         const frequencyGrd = this.frequencyDomainCtx.createLinearGradient(0, 0, 0, this.canvasProperties.height);
@@ -132,6 +139,7 @@ export class Visualizer {
         this.frequencyDomainCtx.clearRect(0, 0, this.canvasProperties.width, this.canvasProperties.height);
         this.waveformCtx.clearRect(0, 0, this.canvasProperties.width, this.canvasProperties.height);
         this.waveformOverTimeCtx.clearRect(0, 0, this.canvasProperties.width, this.canvasProperties.height);
+        this.spectrogramCtx.clearRect(0, 0, this.canvasProperties.width, this.canvasProperties.height);
         this.timeData.time = Date.now();
         this.timeData.lastTimeX = 0;
     }
@@ -151,7 +159,7 @@ export class Visualizer {
 
         this.frequencyDomainCtx.moveTo(0, this.canvasProperties.height);
 
-        let timeX = ((Date.now() - this.timeData.time) / this.timeData.timeScale) * this.canvasProperties.width,
+        const timeX = ((Date.now() - this.timeData.time) / this.timeData.timeScale) * this.canvasProperties.width,
             timeWidth = timeX - this.timeData.lastTimeX;
 
         this.waveformOverTimeCtx.fillRect(this.timeData.lastTimeX, this.timeData.timeMin, timeWidth, this.timeData.timeMax - this.timeData.timeMin);
@@ -169,9 +177,16 @@ export class Visualizer {
 
         let barHeight: number, barYOffset: number;
         for (let i = 0; i < this.frequencyBinCount; i++) {
-            barHeight = this.frequencyData[i] / 255 * this.canvasProperties.height;
+            const amp = this.frequencyData[i] / 255;
+            barHeight = amp * this.canvasProperties.height;
             barYOffset = this.canvasProperties.height - barHeight;
+
             this.frequencyDomainCtx.lineTo(frequencyXOffset, barYOffset);
+
+
+            this.spectrogramCtx.fillStyle = `rgba(${amp * 255},${Math.min(100, (1 - amp) * 255)},0, ${amp})`;
+
+            this.spectrogramCtx.fillRect(timeX, (this.frequencyBinCount - i) * this.canvasProperties.frequencyBarHeight, timeWidth, this.canvasProperties.frequencyBarHeight);
 
             let y = this.waveformData[i] / 255 * this.canvasProperties.height;
             if (i === 0) {
