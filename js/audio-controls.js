@@ -13,6 +13,7 @@ export class Controls {
         this.timeDisplay = document.querySelector('#currentTime');
         this.duration = 0;
         this._time = 0;
+        this.msg = null;
         this.amplitude = 0;
         this.paused = true;
         this.seeking = false;
@@ -67,7 +68,17 @@ export class Controls {
     }
     set time(t) {
         this._time = t;
+        if (this.msg) {
+            this.timeDisplay.textContent = this.msg;
+            return;
+        }
         this.timeDisplay.textContent = `${formatTime(t)}/${formatTime(this.duration)}`;
+    }
+    message(msg) {
+        this.timeDisplay.textContent = this.msg = msg;
+    }
+    clearMessage() {
+        this.msg = null;
     }
     setTime(t) {
         if (!this.seeking)

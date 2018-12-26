@@ -109,10 +109,17 @@ class AudioEditor {
     play() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.audioElement.play();
+            this.clearMessage();
             this.visualizer.paused = false;
             this.controls.paused = this.audioElement.paused;
             this.controls.duration = this.audioElement.duration;
         });
+    }
+    message(msg) {
+        this.controls.message(msg);
+    }
+    clearMessage() {
+        this.controls.clearMessage();
     }
 }
 let editor;
@@ -122,9 +129,10 @@ document.addEventListener('mousedown', () => __awaiter(this, void 0, void 0, fun
     editor.setSource(trackInput.value);
 }), { once: true });
 trackInput.addEventListener('change', () => __awaiter(this, void 0, void 0, function* () {
+    editor.message('Loading...');
     yield editor.pause();
     editor.setSource(trackInput.value);
-    editor.play();
+    yield editor.play();
 }));
 document.addEventListener('dragover', e => {
     e.preventDefault();

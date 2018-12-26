@@ -35,10 +35,25 @@ export class Controls {
         return this._time;
     }
 
+    private msg = null;
+
     private set time(t: number) {
         this._time = t;
 
+        if (this.msg) {
+            this.timeDisplay.textContent = this.msg;
+            return;
+        }
+
         this.timeDisplay.textContent = `${formatTime(t)}/${formatTime(this.duration)}`
+    }
+
+    message(msg: string) {
+        this.timeDisplay.textContent = this.msg = msg;
+    }
+
+    clearMessage() {
+        this.msg = null;
     }
 
     setTime(t: number) {

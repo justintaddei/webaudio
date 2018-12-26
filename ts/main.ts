@@ -123,20 +123,27 @@ class AudioEditor {
 
     async pause() {
         this.visualizer.paused = true;
-        
+
         await this.audioElement.pause();
 
         this.controls.paused = this.audioElement.paused;
-        
     }
 
     async play() {
         await this.audioElement.play();
-
+        this.clearMessage();
         this.visualizer.paused = false;
 
         this.controls.paused = this.audioElement.paused;
         this.controls.duration = this.audioElement.duration;
+    }
+
+    message(msg: string) {
+        this.controls.message(msg);
+    }
+
+    clearMessage() {
+        this.controls.clearMessage();
     }
 }
 
@@ -149,9 +156,10 @@ document.addEventListener('mousedown', async () => {
 }, { once: true })
 
 trackInput.addEventListener('change', async () => {
+    editor.message('Loading...');
     await editor.pause();
     editor.setSource(trackInput.value);
-    editor.play();
+    await editor.play();
 });
 
 document.addEventListener('dragover', e => {
